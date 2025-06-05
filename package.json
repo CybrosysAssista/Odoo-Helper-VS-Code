@@ -1,0 +1,161 @@
+{
+  "name": "odoo-code-assistance",
+  "displayName": "Odoo Code Assistance",
+  "description": "Advanced Odoo development assistant with model indexing, XML completion, and API decorator support",
+  "version": "0.0.1",
+  "publisher": "cybrosys",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:xml"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "odoo-code-assistance.createOdooModelFile",
+        "title": "Create Model File"
+      },
+      {
+        "command": "odoo-code-assistance.createOdooViewFile",
+        "title": "Create View File"
+      },
+      {
+        "command": "odoo-code-assistance.createOdooAccessFile",
+        "title": "Create Security File"
+      },
+      {
+        "command": "odoo-code-assistance.createModuleBasic",
+        "title": "Create Basic Module"
+      },
+      {
+        "command": "odoo-code-assistance.createModuleAdvanced",
+        "title": "Create Advanced Module"
+      },
+      {
+        "command": "odoo-code-assistance.createModuleowlBasic",
+        "title": "Create Basic OWL Module"
+      },
+      {
+        "command": "odoo-code-assistance.createModuleowlAdvanced",
+        "title": "Create Advanced OWL Module"
+      },
+      {
+        "command": "odoo-code-assistance.createModuleWithSystrayMenu",
+        "title": "Create Module with Systray Menu"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "odoo-code-assistance.createFileSubmenu",
+          "group": "navigation@1",
+          "title": "Create Odoo File"
+        },
+        {
+          "submenu": "odoo-code-assistance.createModuleSubmenu",
+          "group": "navigation@2",
+          "title": "Create Odoo Module"
+        }
+      ],
+      "odoo-code-assistance.createFileSubmenu": [
+        {
+          "command": "odoo-code-assistance.createOdooModelFile",
+          "group": "odoo@1"
+        },
+        {
+          "command": "odoo-code-assistance.createOdooViewFile",
+          "group": "odoo@2"
+        },
+        {
+          "command": "odoo-code-assistance.createOdooAccessFile",
+          "group": "odoo@3"
+        }
+      ],
+      "odoo-code-assistance.createModuleSubmenu": [
+        {
+          "command": "odoo-code-assistance.createModuleBasic",
+          "group": "odoo@1"
+        },
+        {
+          "command": "odoo-code-assistance.createModuleAdvanced",
+          "group": "odoo@2"
+        },
+        {
+          "command": "odoo-code-assistance.createModuleowlBasic",
+          "group": "odoo@3"
+        },
+        {
+          "command": "odoo-code-assistance.createModuleowlAdvanced",
+          "group": "odoo@4"
+        },
+        {
+          "command": "odoo-code-assistance.createModuleWithSystrayMenu",
+          "group": "odoo@5"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "odoo-code-assistance.createFileSubmenu",
+        "label": "Create Odoo File"
+      },
+      {
+        "id": "odoo-code-assistance.createModuleSubmenu",
+        "label": "Create Odoo Module"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "xml",
+        "path": "./snippets/xml.json"
+      },
+      {
+        "language": "python",
+        "path": "./snippets/python.json"
+      }
+    ],
+    "configuration": {
+      "title": "Odoo Code Assistance",
+      "properties": {
+        "odoo-code-assistance.enableModelIndexing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable model indexing"
+        },
+        "odoo-code-assistance.enableXmlCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable XML completion"
+        },
+        "odoo-code-assistance.enableApiDecoratorCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable API decorator completion"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.x",
+    "eslint": "^8.54.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-electron": "^2.3.8"
+  }
+}

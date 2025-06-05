@@ -1,0 +1,123 @@
+{   "Odoo Common Imports": {
+        "prefix": "odoo common imports",
+        "body": [
+           "from odoo import api,fields,models"
+        ],
+        "description": "Add odoo common imports api,fields,models"
+    },
+    "Odoo Abstract Model": {
+        "prefix": "odoo abstract",
+        "body": [
+            "from odoo import api,fields,models",
+            "",
+            "class ${1:ModelName}(models.AbstractModel):",
+            "    _name = '${2:model.name}'",
+            "    _description = '${3:Model Description}'",
+            "",
+            "    name = fields.Char(string='Name', required=True)",
+            "    ${4:active} = fields.Boolean(string='Active', default=True)"
+        ],
+        "description": "Create a new Odoo abstract model"
+    },
+    "Odoo Transient Model": {
+        "prefix": "odoo transient",
+        "body": [
+            "from odoo import api,fields,models",
+            "",
+            "class ${1:ModelName}(models.TransientModel):",
+            "    _name = '${2:model.name}'",
+            "    _description = '${3:Model Description}'",
+            "",
+            "    name = fields.Char(string='Name', required=True)",
+            "    ${4:active} = fields.Boolean(string='Active', default=True)"
+        ],
+        "description": "Create a new Odoo transient model"
+    },
+    "Computed Field": {
+        "prefix": "odoo compute",
+        "body": [
+            "${1:field_name} = fields.${2:FieldType}(string='${3:Field Label}', compute='_compute_${1:field_name}', store=True)",
+            "",
+            "@api.depends('${4:dependent_field}')",
+            "def _compute_${1:field_name}(self):",
+            "    for record in self:",
+            "        record.${1:field_name} = ${5:computation}"
+        ],
+        "description": "Create a computed field with its compute method"
+    },
+    "Onchange Method": {
+        "prefix": "odoo onchange",
+        "body": [
+            "@api.onchange('${1:field_name}')",
+            "def _onchange_${1:field_name}(self):",
+            "    if self.${1:field_name}:",
+            "        self.${2:target_field} = ${3:value}"
+        ],
+        "description": "Create an onchange method"
+    },
+    "Constraint Method": {
+        "prefix": "odoo constraint",
+        "body": [
+            "@api.constrains('${1:field_name}')",
+            "def _check_${1:field_name}(self):",
+            "    for record in self:",
+            "        if ${2:condition}:",
+            "            raise ValidationError(_('${3:Error Message}'))"
+        ],
+        "description": "Create a constraint method"
+    },
+    "Search Method": {
+        "prefix": "odoo search",
+        "body": [
+            "@api.model",
+            "def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):",
+            "    args = args or []",
+            "    domain = []",
+            "    if name:",
+            "        domain = ['|', '|',",
+            "            ('name', operator, name),",
+            "            ('${1:field_name}', operator, name),",
+            "            ('${2:field_name}', operator, name)]",
+            "    return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)"
+        ],
+        "description": "Create a name search method"
+    },
+    "Default Get Method": {
+        "prefix": "odoo default",
+        "body": [
+            "@api.model",
+            "def default_get(self, fields_list):",
+            "    res = super().default_get(fields_list)",
+            "    res.update({",
+            "        '${1:field_name}': ${2:default_value},",
+            "    })",
+            "    return res"
+        ],
+        "description": "Create a default_get method"
+    },
+    "Action Method": {
+        "prefix": "odoo action",
+        "body": [
+            "def action_${1:action_name}(self):",
+            "    self.ensure_one()",
+            "    return {",
+            "        'name': _('${2:Action Title}'),",
+            "        'type': 'ir.actions.act_window',",
+            "        'res_model': '${3:model.name}',",
+            "        'view_mode': 'list,form',",
+            "        'domain': [('${4:field}', '=', self.${5:field})],",
+            "        'context': {'default_${6:field}': self.${7:field}},",
+            "    }"
+        ],
+        "description": "Create an action method"
+    },
+    "SQL Constraint": {
+        "prefix": "odoo sql constraints",
+        "body": [
+            "_sql_constraints = [",
+            "    ('${1:constraint_name}', '${2:constraint_type}', '${3:message}')",
+            "]"
+        ],
+        "description": "Add SQL constraints"
+    }
+}
