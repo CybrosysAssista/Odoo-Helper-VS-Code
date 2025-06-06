@@ -134,23 +134,40 @@ const extractFields = (classContent) => {
             continue;
         }
 
-        // Initialize field entry
         fields[fieldName] = { type: fieldType, related: null };
 
-        // Extract the line or arguments for this field definition
-        const fieldLine = classContent.slice(fieldMatch.index, classContent.indexOf('\n', fieldMatch.index + 1));
+        // Find the full argument list inside parentheses after the fieldType
+        // Start index is right after fieldType
+        const startIndex = classContent.indexOf('(', fieldMatch.index);
+        if (startIndex === -1) continue;
+
+        // We want to extract the balanced parentheses content (handle multiline)
+        let openParens = 1;
+        let endIndex = startIndex + 1;
+        while (endIndex < classContent.length && openParens > 0) {
+            const char = classContent[endIndex];
+            if (char === '(') openParens++;
+            else if (char === ')') openParens--;
+            endIndex++;
+        }
+
+        if (openParens !== 0) {
+            // Unbalanced parentheses, skip this field
+            continue;
+        }
+
+        const argsContent = classContent.slice(startIndex + 1, endIndex - 1);
 
         if (['Many2one', 'One2many', 'Many2many'].includes(fieldType)) {
-            // Match either comodel_name= or first argument
-            const comodelMatch = fieldLine.match(
-                /(?:comodel_name\s*=\s*["']([^"']+)["']|fields\.\w+\s*\(\s*["']([^"']+)["'])/
+            // Try to match comodel_name param or first argument string inside argsContent
+            const comodelMatch = argsContent.match(
+                /comodel_name\s*=\s*["']([^"']+)["']|^\s*["']([^"']+)["']/
             );
-            
+
             if (comodelMatch) {
                 fields[fieldName].related = comodelMatch[1] || comodelMatch[2];
             }
         }
-
     }
 
     return fields;
@@ -316,31 +333,57 @@ function registerModelProviders(context) {
         'python',
         {
             provideCompletionItems(document, position) {
+                const fullText = document.getText();
+                const lines = fullText.split('\n');
+                const aliasMap = { self: null }; // Track alias to chain
+
+                // Step 1: Find all alias assignments in for-loops
+                const forLoopRegex = /for\s+([a-zA-Z_][\w]*)\s+in\s+([\w\.]+)/;
+                for (const line of lines) {
+                    const match = line.match(forLoopRegex);
+                    if (match) {
+                        const [_, alias, origin] = match;
+                        aliasMap[alias] = origin;
+                    }
+                }
+
+                // Step 2: Get the current line and match variable access
                 const line = document.lineAt(position);
                 const textBefore = line.text.substring(0, position.character);
 
-                const match = textBefore.match(/self((?:\.[a-zA-Z_][a-zA-Z0-9_]*)+)\.$/);
+                // Build alias regex from known variables
+                const aliases = Object.keys(aliasMap).join('|');
+                const match = textBefore.match(new RegExp(`\\b(${aliases})((?:\\.[a-zA-Z_][\\w]*)*)\\.$`));
                 if (!match) return;
 
-                const chain = match[1].split('.').slice(1); // ['field1', 'field2', ...]
-                const text = document.getText();
-                const modelMatch = text.match(/_name\s*=\s*['"]([^'"]+)['"]/);
-                if (!modelMatch) return;
+                let [_, alias, suffix] = match;
+                let fullChain = alias;
 
-                let modelName = modelMatch[1];
+                // Resolve chain recursively
+                while (aliasMap[fullChain]) {
+                    fullChain = aliasMap[fullChain];
+                }
+
+                const fullFieldChain = (fullChain + suffix).split('.').filter(Boolean); // ['self', 'order_line', 'product_id']
+
+                // Step 3: Find root model name
+                const nameMatch = fullText.match(/_name\s*=\s*['"]([^'"]+)['"]/);
+                const inheritMatch = fullText.match(/_inherit\s*=\s*['"]([^'"]+)['"]/);
+                let modelName = nameMatch?.[1] || inheritMatch?.[1];
+                if (!modelName) return;
+
+                // Step 4: Traverse fields along the chain
                 let fields = modelDataCache[modelName];
-
-                // Traverse the chain
-                for (const fieldName of chain) {
-                    if (!fields || !fields[fieldName]) return;
-                    const relatedModel = fields[fieldName].related;
-                    console.log(`Traversing field: ${fieldName}, related model: ${relatedModel}`);
-                    if (!relatedModel || !modelDataCache[relatedModel]) return;
-                    modelName = relatedModel;
+                for (let i = 1; i < fullFieldChain.length; i++) {
+                    const field = fullFieldChain[i];
+                    if (!fields?.[field]) return;
+                    const related = fields[field].related;
+                    if (!related || !modelDataCache[related]) return;
+                    modelName = related;
                     fields = modelDataCache[modelName];
                 }
 
-                // Suggest fields from the final model
+                // Step 5: Suggest fields
                 return Object.entries(fields).map(([fieldName, meta]) => {
                     const item = new vscode.CompletionItem(fieldName, vscode.CompletionItemKind.Field);
                     item.insertText = fieldName;
@@ -349,7 +392,7 @@ function registerModelProviders(context) {
                 });
             }
         },
-        '.' // triggered after dot
+        '.' // Trigger on dot
     );
     
     context.subscriptions.push(RelatedFieldProvider);

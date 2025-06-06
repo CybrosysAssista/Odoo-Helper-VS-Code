@@ -328,6 +328,10 @@ function registerCommands(context) {
             handler: (uri) => handleCreateModule(uri, 'systray_module')
         },
         {
+            command: 'odoo-code-assistance.createModuleWebsiteTheme',
+            handler: (uri) => handleCreateModule(uri, 'website_theme')
+        },
+        {
             command: 'odoo-code-assistance.createOdooModelFile',
             handler: handleCreateOdooModelFile
         },

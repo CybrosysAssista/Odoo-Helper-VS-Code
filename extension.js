@@ -6,9 +6,7 @@ const { runOdooLint } = require('./src/services/odooLinter');
 const modelIndexService = require('./src/services/modelIndexService');
 const OdooXmlCompletionProvider = require('./src/providers/xml/xmlCompletionProvider');
 const RelationalFieldCompletionProvider = require('./src/providers/completion/relationalFieldProvider');
-const ApiDecoratorCompletionProvider = require('./src/providers/completion/apiDecoratorProvider');
 const ImportCompletionProvider = require('./src/providers/completion/importCompletionProvider');
-const ClassTemplateProvider = require('./src/providers/completion/classTemplateProvider');
 
 function activate(context) {
     // Initialize model index service
@@ -39,14 +37,6 @@ function activate(context) {
         )
     );
 
-    // Register API decorator completion provider
-    const apiDecoratorProvider = new ApiDecoratorCompletionProvider();
-    context.subscriptions.push(
-        vscode.languages.registerCompletionItemProvider(
-            { scheme: 'file', language: 'python' },
-            apiDecoratorProvider
-        )
-    );
 
     // Register import completion provider
     const importProvider = new ImportCompletionProvider();
@@ -54,15 +44,6 @@ function activate(context) {
         vscode.languages.registerCompletionItemProvider(
             { scheme: 'file', language: 'python' },
             importProvider
-        )
-    );
-
-    // Register class template provider
-    const classTemplateProvider = new ClassTemplateProvider();
-    context.subscriptions.push(
-        vscode.languages.registerCompletionItemProvider(
-            { scheme: 'file', language: 'python' },
-            classTemplateProvider
         )
     );
 

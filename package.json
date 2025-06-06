@@ -2,7 +2,7 @@
   "name": "odoo-code-assistance",
   "displayName": "Odoo Code Assistance",
   "description": "Advanced Odoo development assistant with model indexing, XML completion, and API decorator support",
-  "version": "0.0.1",
+  "version": "1.0.2",
   "publisher": "cybrosys",
   "engines": {
     "vscode": "^1.85.0"
@@ -50,6 +50,10 @@
       {
         "command": "odoo-code-assistance.createModuleWithSystrayMenu",
         "title": "Create Module with Systray Menu"
+      },
+      {
+        "command": "odoo-code-assistance.createModuleWebsiteTheme",
+        "title": "Create Website Theme"
       }
     ],
     "menus": {
@@ -99,6 +103,10 @@
         {
           "command": "odoo-code-assistance.createModuleWithSystrayMenu",
           "group": "odoo@5"
+        },
+        {
+          "command": "odoo-code-assistance.createModuleWebsiteTheme",
+          "group": "odoo@6"
         }
       ]
     },

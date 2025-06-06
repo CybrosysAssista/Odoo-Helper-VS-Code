@@ -3,7 +3,9 @@ const odooFieldTypes = require('./data/odooFieldTypes');
 const odooDecorators = require('./data/odooDecorators');
 const odooFieldAttributes = require('./data/odooFieldAttributes');
 const fieldSnippets = require('./data/odooFieldSnippets');
+const utilitySnippets = require('./data/odooUtilitySnippets');
 const methodSuggestions = require('./data/odooMethodSnippets');
+const modelSnippets = require('./data/odooModelSnippets');
 
 function registerFieldProviders(context) {
     const fieldTypeProvider = vscode.languages.registerCompletionItemProvider(
@@ -74,6 +76,60 @@ function registerFieldProviders(context) {
         "="
     );
     context.subscriptions.push(fieldAttributesProvider);
+// const MethodProvider = vscode.languages.registerCompletionItemProvider(
+//     'python',
+//     {
+//         async provideCompletionItems(document, position) {
+//             const fileContent = document.getText();
+
+//             // Match both _inherit and _name to ensure coverage
+//             const modelRegex = /_(inherit|name)\s*=\s*['"]([\w.]+)['"]/g;
+//             const matchedModels = new Set();
+//             let match;
+//             while ((match = modelRegex.exec(fileContent)) !== null) {
+//                 matchedModels.add(match[2]); // e.g., 'res.partner'
+//             }
+
+//             const allMethods = new Map(); // methodName -> fullSignature
+//             for (const model of matchedModels) {
+//                 const pythonFileName = `${model.replace(/\./g, '_')}.py`;
+//                 const modelFiles = await vscode.workspace.findFiles(`**/${pythonFileName}`);
+
+//                 for (const file of modelFiles) {
+//                     try {
+//                         const content = (await vscode.workspace.fs.readFile(file)).toString();
+
+//                         // Match def method_name(self, arg1, arg2): or @api.depends(...) def method...
+//                         const methodRegex = /def\s+([a-zA-Z_][\w]*)\s*\(([^)]*)\)/g;
+//                         let methodMatch;
+//                         while ((methodMatch = methodRegex.exec(content)) !== null) {
+//                             const methodName = methodMatch[1];
+//                             const params = methodMatch[2];
+
+//                             if (!methodName.startsWith('__')) {
+//                                 const fullSig = `def ${methodName}(${params})`;
+//                                 allMethods.set(methodName, fullSig);
+//                             }
+//                         }
+//                     } catch (err) {
+//                         console.warn(`Failed to read model file ${file.fsPath}:`, err);
+//                     }
+//                 }
+//             }
+
+//             return [...allMethods.entries()].map(([methodName, fullSig]) => {
+//                 const item = new vscode.CompletionItem(methodName, vscode.CompletionItemKind.Method);
+//                 item.insertText = new vscode.SnippetString(`${fullSig}:\n    $0`);
+//                 item.detail = `Method: ${methodName}`;
+//                 item.documentation = `Auto-suggested from inherited/base model(s)`;
+//                 return item;
+//             });
+//         }
+//     },
+//     "f" // trigger when typing 'f'
+// );
+
+// context.subscriptions.push(MethodProvider);
 
 const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
     'python',
@@ -84,73 +140,15 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
 
             const suggestions = [];
 
-            // Add new model class suggestion
-            const newModelItem = new vscode.CompletionItem('Odoo New Model Class', vscode.CompletionItemKind.Class);
-            newModelItem.sortText = 'odoo new model class';
-            newModelItem.insertText = new vscode.SnippetString(
-                'from odoo import fields,models \n' +
-                '\n' +
-                'class ${1:ModelName}(models.Model):\n' +
-                '    _name = \'${2:model.name}\'\n' +
-                '    _description = \'${3:Model Description}\'\n' +
-                '\n' +
-                '    name = fields.Char(string=\'${4:Name}\', required=True)\n' +
-                '    ${0}'
-            );
-            newModelItem.detail = 'Create a new Odoo model class';
-            newModelItem.documentation = new vscode.MarkdownString(
-                '### Odoo Model Class\n\n' +
-                'Scaffold a new Odoo model class with a basic structure.\n\n' +
-                '**Includes:**\n' +
-                '- Import statement\n' +
-                '- Model class with `_name` and `_description`\n' +
-                '- Example field\n\n' +
-                '**Example:**\n' +
-                '```python\n' +
-                'from odoo import fields,models\n' +
-                '\n' +
-                'class MyModel(models.Model):\n' +
-                '    _name = \'my.model\'\n' +
-                '    _description = \'My Model Description\'\n' +
-                '\n' +
-                '    name = fields.Char(string=\'Name\', required=True)\n' +
-                '```'
-            );
-            suggestions.push(newModelItem);
-
-            // Add inherited model class suggestion
-            const inheritedModelItem = new vscode.CompletionItem('Odoo Inherited Model Class', vscode.CompletionItemKind.Class);
-            inheritedModelItem.sortText = 'odoo inherited model class';
-            inheritedModelItem.insertText = new vscode.SnippetString(
-                'from odoo import fields,models\n' +
-                '\n' +
-                'class ${1:ModelName}(models.Model):\n' +
-                '    _inherit = \'${2:model.to.inherit}\'\n' +
-                '    _description = \'${3:Model Description}\'\n' +
-                '\n' +
-                '    ${4:new_field} = fields.Char(string=\'${5:New Field}\')\n' +
-                '    ${0}'
-            );
-            inheritedModelItem.detail = 'Create an inherited Odoo model class';
-            inheritedModelItem.documentation = new vscode.MarkdownString(
-                '### Inherited Odoo Model\n\n' +
-                'Create an inherited Odoo model class to extend an existing model with custom fields or logic.\n\n' +
-                '**Includes:**\n' +
-                '- `from odoo import fields,models ` import line\n' +
-                '- `_inherit` and `_description` setup\n' +
-                '- Example of a custom field\n\n' +
-                '**Example:**\n' +
-                '```python\n' +
-                'from odoo import fields,models\n' +
-                '\n' +
-                'class ResPartner(models.Model):\n' +
-                '    _inherit = \'res.partner\'\n' +
-                '    _description = \'Extended Partner Model\'\n\n' +
-                '    new_field = fields.Char(string=\'New Field\')\n' +
-                '```\n\n' +
-                'Use this when you need to customize core Odoo models like `res.partner`, `sale.order`, etc.'
-            );
-            suggestions.push(inheritedModelItem);
+            // Add model snippets
+            modelSnippets.forEach(snippet => {
+                const item = new vscode.CompletionItem(snippet.label, vscode.CompletionItemKind.Class);
+                item.sortText = snippet.sortText;
+                item.insertText = new vscode.SnippetString(snippet.insertText);
+                item.detail = snippet.detail;
+                item.documentation = new vscode.MarkdownString(snippet.documentation);
+                suggestions.push(item);
+            });
 
             // Add all decorators with enhanced documentation
             odooDecorators.forEach(decorator => {
@@ -173,7 +171,7 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
                     `def your_method(self):\n` +
                     `    pass\n` +
                     '```\n\n' +
-                    (decorator === 'api.model' ? '**Used for methods that don’t need access to a recordset (no `self` loop).**' :
+                    (decorator === 'api.model' ? '**Used for methods that don\'t need access to a recordset (no `self` loop).**' :
                     decorator === 'api.depends' ? '**Used to specify fields this method depends on.**' :
                     decorator === 'api.onchange' ? '**Used for methods triggered by field changes in forms.**' :
                     decorator === 'api.constrains' ? '**Used for validation constraints on field values.**' :
@@ -195,16 +193,35 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
                 suggestions.push(item);
             });
 
+            utilitySnippets.forEach(snippet => {
+                const item = new vscode.CompletionItem(snippet.label, vscode.CompletionItemKind.Field);
+                item.sortText = `odoo ${String(snippet.label).toLowerCase()}`;
+                item.insertText = snippet.insertText;
+                item.detail = snippet.detail;
+                item.documentation = new vscode.MarkdownString(
+                    `### ${snippet.label}\n\n` +
+                    `${snippet.documentation}`
+                );
+                suggestions.push(item);
+            });
+
             // Add method suggestions
             methodSuggestions.forEach(method => {
                 const item = new vscode.CompletionItem(method.label, vscode.CompletionItemKind.Method);
                 item.sortText = `odoo method ${String(method.label).toLowerCase()}`;
                 item.insertText = new vscode.SnippetString(method.insertText);
                 item.detail = method.detail;
-                item.documentation = new vscode.MarkdownString(
+
+                const markdown = new vscode.MarkdownString(
                     `### ${method.label}\n\n` +
-                    `${method.documentation}`
+                    '```python\n' +
+                    `${method.documentation}\n` +
+                    '```'
                 );
+                markdown.supportHtml = true;
+                markdown.isTrusted = true;
+
+                item.documentation = markdown;
                 suggestions.push(item);
             });
 

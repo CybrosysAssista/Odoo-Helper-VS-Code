@@ -29,7 +29,7 @@ const fieldSnippets = [
         'file_data = fields.Binary(string="File", help="Upload a file", attachment=True, max_size=10)\n' +
         '```'
     ),
-    // Char and Color
+    // Char
     createFieldItem(
         'Odoo Char Field',
         'fields.Char(string="${1:Name}", help="${2:Help text}", required=False, tracking=True, translate=True)',
@@ -38,16 +38,6 @@ const fieldSnippets = [
         '**Example:**\n' +
         '```python\n' +
         'name = fields.Char(string="Name", help="Enter the name", required=False, tracking=True, translate=True)\n' +
-        '```'
-    ),
-    createFieldItem(
-        'Odoo Color Field',
-        'fields.Color(string="${1:Name}", help="${2:Help text}")',
-        'Color Field',
-        'Used to store color values.\n\n' +
-        '**Example:**\n' +
-        '```python\n' +
-        'color = fields.Color(string="Color", help="Select a color")\n' +
         '```'
     ),
     // Integer and Image
@@ -125,7 +115,7 @@ const fieldSnippets = [
         'datetime = fields.Datetime(string="DateTime", help="Select date and time", tracking=True)\n' +
         '```'
     ),
-    // Selection and State
+    // Selection
     createFieldItem(
         'Odoo Selection Field',
         'fields.Selection([\n    (\'draft\', \'Draft\'),\n    (\'confirmed\', \'Confirmed\'),\n    (\'done\', \'Done\')\n],\nstring="${1:Status}",\ndefault=\'draft\',\ntracking=True,\nhelp="${2:Help text}")',
@@ -134,16 +124,6 @@ const fieldSnippets = [
         '**Example:**\n' +
         '```python\n' +
         'status = fields.Selection([\n    (\'draft\', \'Draft\'),\n    (\'confirmed\', \'Confirmed\'),\n    (\'done\', \'Done\')\n],\nstring="Status",\ndefault=\'draft\',\ntracking=True,\nhelp="Select status")\n' +
-        '```'
-    ),
-    createFieldItem(
-        'Odoo State Field',
-        'fields.State([\n    (\'draft\', \'Draft\'),\n    (\'confirmed\', \'Confirmed\'),\n    (\'done\', \'Done\')\n],\nstring="${1:State}",\ndefault=\'draft\',\ntracking=True,\nhelp="${2:Help text}")',
-        'State Field',
-        'Special selection field for workflow states.\n\n' +
-        '**Example:**\n' +
-        '```python\n' +
-        'state = fields.State([\n    (\'draft\', \'Draft\'),\n    (\'confirmed\', \'Confirmed\'),\n    (\'done\', \'Done\')\n],\nstring="State",\ndefault=\'draft\',\ntracking=True,\nhelp="Select state")\n' +
         '```'
     ),
     // Many2one, Many2many, Monetary
@@ -208,28 +188,6 @@ const fieldSnippets = [
         '**Example:**\n' +
         '```python\n' +
         'data = fields.Json(string="Data", help="Enter JSON data")\n' +
-        '```'
-    ),
-    // Attachment
-    createFieldItem(
-        'Odoo Attachment Field',
-        'fields.Attachment(string="${1:Name}", help="${2:Help text}", max_size=10)',
-        'Attachment Field',
-        'For storing file    attachments with size limit.\n\n' +
-        '**Example:**\n' +
-        '```python\n' +
-        'attachment = fields.Attachment(string="Attachment", help="Upload attachment", max_size=10)\n' +
-        '```'
-    ),
-    // Priority
-    createFieldItem(
-        'Odoo Priority Field',
-        'fields.Priority(string="${1:Name}", help="${2:Help text}", default=0)',
-        'Priority Field',
-        'For storing priority levels.\n\n' +
-        '**Example:**\n' +
-        '```python\n' +
-        'priority = fields.Priority(string="Priority", help="Set priority level", default=0)\n' +
         '```'
     )
 ];

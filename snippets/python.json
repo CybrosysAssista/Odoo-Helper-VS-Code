@@ -1,11 +1,5 @@
-{   "Odoo Common Imports": {
-        "prefix": "odoo common imports",
-        "body": [
-           "from odoo import api,fields,models"
-        ],
-        "description": "Add odoo common imports api,fields,models"
-    },
-    "Odoo Abstract Model": {
+{   
+     "Odoo Abstract Model": {
         "prefix": "odoo abstract",
         "body": [
             "from odoo import api,fields,models",
@@ -32,39 +26,6 @@
             "    ${4:active} = fields.Boolean(string='Active', default=True)"
         ],
         "description": "Create a new Odoo transient model"
-    },
-    "Computed Field": {
-        "prefix": "odoo compute",
-        "body": [
-            "${1:field_name} = fields.${2:FieldType}(string='${3:Field Label}', compute='_compute_${1:field_name}', store=True)",
-            "",
-            "@api.depends('${4:dependent_field}')",
-            "def _compute_${1:field_name}(self):",
-            "    for record in self:",
-            "        record.${1:field_name} = ${5:computation}"
-        ],
-        "description": "Create a computed field with its compute method"
-    },
-    "Onchange Method": {
-        "prefix": "odoo onchange",
-        "body": [
-            "@api.onchange('${1:field_name}')",
-            "def _onchange_${1:field_name}(self):",
-            "    if self.${1:field_name}:",
-            "        self.${2:target_field} = ${3:value}"
-        ],
-        "description": "Create an onchange method"
-    },
-    "Constraint Method": {
-        "prefix": "odoo constraint",
-        "body": [
-            "@api.constrains('${1:field_name}')",
-            "def _check_${1:field_name}(self):",
-            "    for record in self:",
-            "        if ${2:condition}:",
-            "            raise ValidationError(_('${3:Error Message}'))"
-        ],
-        "description": "Create a constraint method"
     },
     "Search Method": {
         "prefix": "odoo search",

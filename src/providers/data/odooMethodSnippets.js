@@ -8,7 +8,13 @@ const methodSuggestions = [
                     '    # Post-create logic (optional)\n' +
                     '    return records\n',
         detail: 'Create Method',
-        documentation: 'Override the create method for the model.'
+        documentation: 'Overrides the model’s `create` method to customize record creation.\n\n'
+                     + 'Example:\n'
+                     + '@api.model_create_multi\n'
+                     + 'def create(self, vals_list):\n'
+                     + '    records = super().create(vals_list)\n'
+                     + '    # Custom logic here\n'
+                     + '    return records'
     },
     {
         label: 'Odoo Write Method',
@@ -18,7 +24,12 @@ const methodSuggestions = [
                     '    # Post-write logic (optional)\n' +
                     '    return res\n',
         detail: 'Write Method',
-        documentation: 'Override the write method for the model.'
+        documentation: 'Overrides the model’s `write` method to add custom behavior during updates.\n\n'
+                     + 'Example:\n'
+                     + 'def write(self, values):\n'
+                     + '    res = super().write(values)\n'
+                     + '    # Custom logic here\n'
+                     + '    return res'
     },
     {
         label: 'Odoo Unlink Method',
@@ -28,36 +39,59 @@ const methodSuggestions = [
                     '    # Post-unlink logic (optional)\n' +
                     '    return res\n',
         detail: 'Unlink Method',
-        documentation: 'Override the unlink (delete) method.'
+        documentation: 'Overrides the model’s `unlink` method to customize deletion behavior.\n\n'
+                     + 'Example:\n'
+                     + 'def unlink(self):\n'
+                     + '    # Check conditions or log deletion\n'
+                     + '    return super().unlink()'
     },
     {
         label: 'Odoo Onchange Method',
-        insertText: '@api.onchange(\'field_name\')\n' +
-                    'def _onchange_field_name(self):\n' +
-                    '    # Code to execute on field change\n' +
-                    '    pass\n',
+        insertText: '@api.onchange(\'${1:field_name}\')\n' +
+                    'def _onchange_${1:field_name}(self):\n' +
+                    '    if self.${1:field_name}:\n' +
+                    '        self.${2:target_field} = ${3:value}\n',
         detail: 'Onchange Method',
-        documentation: 'Define an onchange handler.'
+        documentation: 'Automatically triggers when the given field value changes.\n\n'
+                     + 'Example:\n'
+                     + '@api.onchange(\'country_id\')\n'
+                     + 'def _onchange_country_id(self):\n'
+                     + '    if self.country_id:\n'
+                     + '        self.state_id = False'
     },
     {
         label: 'Odoo Compute Method',
-        insertText: '@api.depends(\'field_name\')\n' +
-                    'def _compute_field_name(self):\n' +
-                    '    for rec in self:\n' +
-                    '        # Compute field value logic\n' +
-                    '        rec.field_name = \n',
+        insertText: "${1:field_name} = fields.${2:FieldType}(string='${3:Field Label}', compute='_compute_${1:field_name}', store=True)\n" +
+                    "\n" +
+                    "@api.depends('${4:dependency_field}')\n" +
+                    "def _compute_${1:field_name}(self):\n" +
+                    "    for rec in self:\n" +
+                    "        # Compute logic\n" +
+                    "        rec.${1:field_name} = ${5:value}\n",
         detail: 'Compute Method',
-        documentation: 'Define a computed field function.'
+        documentation: 'Defines a computed field along with its compute method.\n\n'
+                    + 'Example:\n'
+                    + "total_price = fields.Float(string='Total Price', compute='_compute_total_price', store=True)\n\n"
+                    + "@api.depends('unit_price', 'quantity')\n"
+                    + "def _compute_total_price(self):\n"
+                    + "    for rec in self:\n"
+                    + "        rec.total_price = rec.unit_price * rec.quantity"
     },
     {
         label: 'Odoo Constraints Method',
-        insertText: '@api.constrains(\'field_name\')\n' +
-                    'def _check_field_name(self):\n' +
+        insertText: '@api.constrains(\'${1:field_name}\')\n' +
+                    'def _check_${1:field_name}(self):\n' +
                     '    for rec in self:\n' +
-                    '        if not rec.field_name:\n' +
-                    '            raise ValidationError("Field name must be set")\n',
+                    '        if not rec.${1:field_name}:\n' +
+                    '            raise ValidationError("${1:field_name} must be set")\n',
         detail: 'Constraints Method',
-        documentation: 'Add Python constraint validation.'
+        documentation: 'Adds server-side validation logic using constraints.\n\n'
+                     + 'Example:\n'
+                     + '@api.constrains(\'email\')\n'
+                     + 'def _check_email(self):\n'
+                     + '    for rec in self:\n'
+                     + '        if not rec.email:\n'
+                     + '            raise ValidationError("Email is required")'
     }
 ];
 
