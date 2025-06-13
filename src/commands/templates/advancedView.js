@@ -3,7 +3,7 @@ module.exports = {
 <odoo>
     <data>
         <!-- Form View -->
-        <record id="${pureName}_form_view" model="ir.ui.view">
+        <record id="${pureName}_form" model="ir.ui.view">
             <field name="name">${modelDotName}.form</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">
@@ -54,7 +54,7 @@ module.exports = {
         </record>
         
         <!-- List View -->
-        <record id="${pureName}_list_view" model="ir.ui.view">
+        <record id="${pureName}_list" model="ir.ui.view">
             <field name="name">${modelDotName}.list</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">
@@ -69,7 +69,7 @@ module.exports = {
         </record>
         
         <!-- Search View -->
-        <record id="${pureName}_search_view" model="ir.ui.view">
+        <record id="${pureName}_search" model="ir.ui.view">
             <field name="name">${modelDotName}.search</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">
@@ -90,7 +90,7 @@ module.exports = {
         </record>
         
         <!-- Calendar View -->
-        <record id="${pureName}_calendar_view" model="ir.ui.view">
+        <record id="${pureName}_calendar" model="ir.ui.view">
             <field name="name">${modelDotName}.calendar</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">
@@ -102,7 +102,7 @@ module.exports = {
         </record>
         
         <!-- Kanban View -->
-        <record id="${pureName}_kanban_view" model="ir.ui.view">
+        <record id="${pureName}_kanban" model="ir.ui.view">
             <field name="name">${modelDotName}.kanban</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">
@@ -137,7 +137,7 @@ module.exports = {
             <field name="name">${modelTitle}</field>
             <field name="res_model">${modelDotName}</field>
             <field name="view_mode">list,form,kanban,calendar</field>
-            <field name="search_view_id" ref="${pureName}_search_view"/>
+            <field name="search_view_id" ref="${pureName}_search"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create your first ${pureName.replace('_', ' ')}!

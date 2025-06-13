@@ -195,9 +195,10 @@ async function handleCreateOdooViewFile(uri) {
         }
 
         let fileContent = '';
-        const pureName = fileName.replace('.xml', '');
-        const modelDotName = pureName.replace('_', '.');
-        const modelTitle = pureName.replace('_', ' ')
+        const pureName = fileName.replace('.xml', '').replace('_views', '_view');
+        const modelDotName = pureName.replace(/_/g, '.');
+        const modelTitle = pureName
+            .replace(/_/g, ' ')
             .replace(/\b\w/g, c => c.toUpperCase());
 
         switch (fileType) {
@@ -215,6 +216,9 @@ async function handleCreateOdooViewFile(uri) {
                 break;
 
             case 'Advanced View':
+                console.log("pureName",pureName);
+                console.log("modelDotName",modelDotName);
+                console.log("modelTitle",modelTitle);
                 fileContent = getAdvancedViewTemplate(pureName, modelDotName, modelTitle);
                 break;
 

@@ -3,8 +3,8 @@ module.exports = {
 <odoo>
     <data>
         <!-- Inherit Res Config Settings Form -->
-        <record id="${pureName}_settings_view" model="ir.ui.view">
-            <field name="name">${modelDotName}.settings.view</field>
+        <record id="${pureName}_settings_view_form" model="ir.ui.view">
+            <field name="name">${modelDotName}.settings.inherit.view</field>
             <field name="model">res.config.settings</field>
             <field name="inherit_id" ref="base.view_res_config_settings"/>
             <field name="arch" type="xml">

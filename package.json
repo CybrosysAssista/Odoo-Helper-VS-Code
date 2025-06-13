@@ -2,8 +2,8 @@
   "name": "odoo-code-assistance",
   "displayName": "Odoo Code Assistance",
   "description": "Advanced Odoo development assistant with model indexing, XML completion, and API decorator support",
-  "version": "1.0.2",
-  "publisher": "cybrosys",
+  "version": "1.1.1",
+  "publisher": "cybrosys-assista-ltd",
   "engines": {
     "vscode": "^1.85.0"
   },

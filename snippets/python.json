@@ -1,6 +1,6 @@
 {   
      "Odoo Abstract Model": {
-        "prefix": "odoo abstract",
+        "prefix": "odoo abstract model",
         "body": [
             "from odoo import api,fields,models",
             "",
@@ -14,7 +14,7 @@
         "description": "Create a new Odoo abstract model"
     },
     "Odoo Transient Model": {
-        "prefix": "odoo transient",
+        "prefix": "odoo transient model",
         "body": [
             "from odoo import api,fields,models",
             "",
@@ -26,51 +26,6 @@
             "    ${4:active} = fields.Boolean(string='Active', default=True)"
         ],
         "description": "Create a new Odoo transient model"
-    },
-    "Search Method": {
-        "prefix": "odoo search",
-        "body": [
-            "@api.model",
-            "def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):",
-            "    args = args or []",
-            "    domain = []",
-            "    if name:",
-            "        domain = ['|', '|',",
-            "            ('name', operator, name),",
-            "            ('${1:field_name}', operator, name),",
-            "            ('${2:field_name}', operator, name)]",
-            "    return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)"
-        ],
-        "description": "Create a name search method"
-    },
-    "Default Get Method": {
-        "prefix": "odoo default",
-        "body": [
-            "@api.model",
-            "def default_get(self, fields_list):",
-            "    res = super().default_get(fields_list)",
-            "    res.update({",
-            "        '${1:field_name}': ${2:default_value},",
-            "    })",
-            "    return res"
-        ],
-        "description": "Create a default_get method"
-    },
-    "Action Method": {
-        "prefix": "odoo action",
-        "body": [
-            "def action_${1:action_name}(self):",
-            "    self.ensure_one()",
-            "    return {",
-            "        'name': _('${2:Action Title}'),",
-            "        'type': 'ir.actions.act_window',",
-            "        'res_model': '${3:model.name}',",
-            "        'view_mode': 'list,form',",
-            "        'domain': [('${4:field}', '=', self.${5:field})],",
-            "        'context': {'default_${6:field}': self.${7:field}},",
-            "    }"
-        ],
-        "description": "Create an action method"
     },
     "SQL Constraint": {
         "prefix": "odoo sql constraints",

@@ -1,7 +1,6 @@
-# Odoo-Code-Assistance
-Odoo extension for Visual Studio Code
+# 📘 Assista IDE Shortcuts Documentation
 
-Odoo Code Assistance provides a collection of intelligent code shortcuts designed to accelerate Odoo development. Below is the categorized reference of all available keywords (shortcuts) with descriptions and examples.
+Assista IDE provides a collection of intelligent code shortcuts designed to accelerate Odoo development. Below is the categorized reference of all available keywords (shortcuts) with descriptions and examples.
 
 ---
 
@@ -653,8 +652,7 @@ By default, VSCode shows standard right-click options when you click on any fold
 - **Create Odoo File**
 - **Create Odoo Module**
 
-![Screenshot from 2025-06-09 20-53-30](https://github.com/user-attachments/assets/097226b5-c422-4080-8590-3c65c14748d5)
-
+![Screenshot from 2025-06-09 20-53-30](https://github.com/user-attachments/assets/7423ff66-5fb6-4484-85f9-a6f4c52cb91a)
 
 *Main context menu showing added Odoo development options*
 
@@ -664,7 +662,7 @@ By default, VSCode shows standard right-click options when you click on any fold
 
 Clicking on **Create Odoo File** reveals three submenus:
 
-![Screenshot from 2025-06-10 10-55-27](https://github.com/user-attachments/assets/6a0ed5cd-03f3-459f-bc82-3ca381adcfbb)
+![Screenshot from 2025-06-10 10-55-27](https://github.com/user-attachments/assets/b72b40f7-4283-49e3-a16d-2b71ed211719)
 
 *Create Odoo File submenu options*
 
@@ -675,7 +673,7 @@ When selected, a search bar appears at the top of VSCode with the following file
 - `model.py` – Creates a new Python model file
 - `controller.py` – Creates a new controller file for web routes
 
-![Screenshot from 2025-06-10 10-57-02](https://github.com/user-attachments/assets/672a9d78-c096-43ef-88c1-8b7ec7e5eecc)
+![Screenshot from 2025-06-10 10-57-02](https://github.com/user-attachments/assets/2909f766-d6c9-4d27-8c54-fd8f676924b6)
 
 *Model file creation options in the search bar*
 
@@ -692,7 +690,7 @@ This opens a list of pre-defined view templates. You can choose from:
 - Settings View
 - Cron Job View
 
-![Screenshot from 2025-06-10 10-57-14](https://github.com/user-attachments/assets/e7eeb5b6-a109-44ad-96d3-88fdcc5e426b)
+![Screenshot from 2025-06-10 10-57-14](https://github.com/user-attachments/assets/6cfc8d31-7dc2-49cb-ae21-02ef336bbb3f)
 
 *View file type selection menu*
 
@@ -705,7 +703,7 @@ Prompts you to enter a model name and automatically generates a security file wi
 
 The **Create Odoo Module** option lets you quickly scaffold a new module from several templates:
 
-![Screenshot from 2025-06-10 10-56-42](https://github.com/user-attachments/assets/e1e23792-d55d-4373-ba20-379a6d1c938f)
+![Screenshot from 2025-06-10 10-56-42](https://github.com/user-attachments/assets/55d349af-0288-44e3-af70-6ff22af70b70)
 
 *Create Odoo Module submenu options*
 
@@ -733,4 +731,5 @@ Scaffolds a module for custom website themes and QWeb templates.
 
 When you generate an **OWL Advanced Module**, Assista IDE scaffolds a fully functional OWL environment, complete with proper folder structure, JS components, assets, and templates.
 
-![Screenshot from 2025-06-10 10-51-54](https://github.com/user-attachments/assets/cf270149-0564-4124-abc2-985627561830)
+![image](https://github.com/user-attachments/assets/c4d97631-3c6f-4333-9fa8-f08c1c0b2cba)
+

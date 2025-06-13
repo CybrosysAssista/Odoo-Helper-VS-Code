@@ -3,7 +3,7 @@ module.exports = {
 <odoo>
     <data>
         <!-- Form View -->
-        <record id="${pureName}_form_view" model="ir.ui.view">
+        <record id="${pureName}_form" model="ir.ui.view">
             <field name="name">${modelDotName}.form</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">
@@ -19,7 +19,7 @@ module.exports = {
         </record>
         
         <!-- List View -->
-        <record id="${pureName}_list_view" model="ir.ui.view">
+        <record id="${pureName}_list" model="ir.ui.view">
             <field name="name">${modelDotName}.list</field>
             <field name="model">${modelDotName}</field>
             <field name="arch" type="xml">

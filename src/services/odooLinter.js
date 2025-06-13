@@ -29,7 +29,7 @@ const ODOO_STANDARDS = {
     namingPatterns: {
         // ID naming patterns
         menuId: /^[a-z_]+_menu(_[a-z_]+)?$/,
-        viewId: /^[a-z_]+_view_(form|list|kanban|search|tree|calendar|graph|pivot|activity)$/,
+        viewId: /^[a-z_]+_view_(form|list|kanban|search|tree|calendar|graph|pivot|activity)(_inherit)?$/,
         actionId: /^[a-z_]+_action(_[a-z_]+)?$/,
         groupId: /^[a-z_]+_group_[a-z_]+$/,
         ruleId: /^[a-z_]+_rule_[a-z_]+$/,
@@ -120,7 +120,9 @@ const ID_NAMING_CHECKS = [
         message: (id) => `Odoo naming: Menu ID '${id}' should follow pattern: <model_name>_menu or <model_name>_menu_<detail>`
     },
     {
-        pattern: /id="([^"]*_view_[^"]*)"/, 
+        // Match ANY id in a view record, not just those containing _view_
+        pattern: /id="([^"]*)"/, 
+        context: 'ir.ui.view', // This will be checked in the function
         test: (id) => !ODOO_STANDARDS.namingPatterns.viewId.test(id),
         message: (id) => `Odoo naming: View ID '${id}' should follow pattern: <model_name>_view_<view_type>`
     },
@@ -144,32 +146,57 @@ const ID_NAMING_CHECKS = [
 const NAME_FIELD_CHECKS = [
     {
         pattern: /<field name="name">([^<]*)<\/field>/,
-        context: /model="ir\.ui\.view"/,
+        context: /model="ir\.ui\.view"/, // still kept for compatibility
         test: (name, line, lines, lineIndex) => {
-            // Find the record that contains this field
-            for (let i = lineIndex - 1; i >= 0; i--) {
-                if (lines[i].includes('<record') && lines[i].includes('model="ir.ui.view"')) {
-                    return !ODOO_STANDARDS.namingPatterns.viewName.test(name.trim());
+            let isInherited = false;
+            let isViewModel = false;
+
+            // Look upwards to confirm we're inside a <record model="ir.ui.view">
+            for (let i = lineIndex; i >= 0; i--) {
+                const checkLine = lines[i];
+                if (checkLine.includes('<record') && checkLine.includes('model="ir.ui.view"')) {
+                    isViewModel = true;
+                    break;
                 }
-                if (lines[i].includes('</record>')) break;
+                if (checkLine.includes('</record>')) break;
             }
-            return false;
+
+            if (!isViewModel) return false; // Skip if not a view definition
+
+            // Check if this is an inherited view
+            for (let i = lineIndex - 5; i <= lineIndex + 5; i++) {
+                if (i >= 0 && i < lines.length && lines[i].includes('inherit_id')) {
+                    isInherited = true;
+                    break;
+                }
+            }
+
+            if (isInherited) return false; // Skip inherited views for this rule
+
+            // Finally apply the naming rule
+            return !ODOO_STANDARDS.namingPatterns.viewName.test(name.trim());
         },
-        message: (name) => `Odoo naming: View name '${name}' should use dots instead of underscores and follow pattern: <model.name>.view.<type>`
+        message: (name) =>
+            `Odoo naming: View name '${name}' should use dots instead of underscores and follow pattern: <model.name>.view.<type>`
     },
     {
         pattern: /<field name="name">([^<]*)<\/field>/,
-        context: /inherit_id/,
+        context: /model="ir\.ui\.view"/,
         test: (name, line, lines, lineIndex) => {
-            // Check if this is an inherit view
+            let isInherited = false;
+
             for (let i = lineIndex - 5; i <= lineIndex + 5; i++) {
                 if (i >= 0 && i < lines.length && lines[i].includes('inherit_id')) {
-                    return !ODOO_STANDARDS.namingPatterns.inheritSuffix.test(name.trim());
+                    isInherited = true;
+                    break;
                 }
             }
-            return false;
+
+            if (!isInherited) return false; // only check if it's an inherited view
+            return !ODOO_STANDARDS.namingPatterns.inheritSuffix.test(name.trim());
         },
-        message: (name) => `Odoo naming: Inherited view name '${name}' should contain '.inherit.<details>' suffix`
+        message: (name) =>
+            `Odoo naming: Inherited view name '${name}' should contain '.inherit.<details>' suffix`
     }
 ];
 
@@ -449,6 +476,20 @@ function checkIdNaming(lines, diagnostics) {
             const match = line.match(check.pattern);
             if (match) {
                 const id = match[1];
+                if (check.context === 'ir.ui.view') {
+                    let isViewModel = false;
+                    for (let j = i; j >= 0; j--) {
+                        const checkLine = lines[j];
+                        if (checkLine.includes('<record') && checkLine.includes('model="ir.ui.view"')) {
+                            isViewModel = true;
+                            break;
+                        }
+                        if (checkLine.includes('</record>') || checkLine.includes('<template')) {
+                            break;
+                        }
+                    }
+                    if (!isViewModel) return;
+                }
                 if (check.test(id)) {
                     diagnostics.push(createDiagnostic(i, 0, line.length, check.message(id)));
                 }

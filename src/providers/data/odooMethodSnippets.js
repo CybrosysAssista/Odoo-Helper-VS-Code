@@ -92,6 +92,54 @@ const methodSuggestions = [
                      + '    for rec in self:\n'
                      + '        if not rec.email:\n'
                      + '            raise ValidationError("Email is required")'
+    },
+    {
+        "label": "Odoo Search Method",
+        "insertText": "@api.model\n"
+                    + "def _search_name(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):\n"
+                    + "    args = args or []\n"
+                    + "    domain = []\n"
+                    + "    if name:\n"
+                    + "        domain = ['|', '|',\n"
+                    + "            ('name', operator, name),\n"
+                    + "            ('${1:field_name}', operator, name),\n"
+                    + "            ('${2:field_name}', operator, name)]\n"
+                    + "    return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)",
+        "detail": "Name Search Method",
+        "documentation": "Implements a custom `_search_name` method for searching by multiple fields.\n\n"
+                    + "Example:\n"
+                    + "Used in many2one search operations to find records based on multiple fields."
+    },
+    {
+        "label": "Odoo Default Get Method",
+        "insertText": "@api.model\n"
+                    + "def default_get(self, fields_list):\n"
+                    + "    res = super().default_get(fields_list)\n"
+                    + "    res.update({\n"
+                    + "        '${1:field_name}': ${2:default_value},\n"
+                    + "    })\n"
+                    + "    return res",
+        "detail": "Default Get Method",
+        "documentation": "Sets default values for fields during record creation.\n\n"
+                    + "Example:\n"
+                    + "Override `default_get` to provide dynamic default values based on business logic."
+    },
+    {
+        "label": "Odoo Action Method",
+        "insertText": "def action_${1:action_name}(self):\n"
+                    + "    self.ensure_one()\n"
+                    + "    return {\n"
+                    + "        'name': _('${2:Action Title}'),\n"
+                    + "        'type': 'ir.actions.act_window',\n"
+                    + "        'res_model': '${3:model.name}',\n"
+                    + "        'view_mode': 'list,form',\n"
+                    + "        'domain': [('${4:field}', '=', self.${5:field})],\n"
+                    + "        'context': {'default_${6:field}': self.${7:field}},\n"
+                    + "    }",
+        "detail": "Action Window Method",
+        "documentation": "Creates an action to open a specific view filtered by domain.\n\n"
+                    + "Example:\n"
+                    + "Used in smart buttons or custom menus to navigate related records."
     }
 ];
 

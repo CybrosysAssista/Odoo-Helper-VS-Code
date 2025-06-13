@@ -20,10 +20,10 @@
     "description": "Basic Odoo record tag with dynamic ID, model, and fields"
   },
   "Odoo Form View": {
-    "prefix": "odoo form",
+    "prefix": "odoo form view",
     "body": [
-      "<record id=\"view_${1:model_name}_form\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model.name}.form</field>",
+      "<record id=\"${1:model_name}_view_form\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.form</field>",
       "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <form string=\"${3:Form Title}\">",
@@ -40,11 +40,11 @@
     "description": "Create a new Odoo form view"
   },
   "Odoo List View": {
-    "prefix": "odoo list",
+    "prefix": "odoo list view",
     "body": [
-      "<record id=\"view_${1:model_name}_list\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model_name}.list</field>",
-      "    <field name=\"model\">${2:model_name}</field>",
+      "<record id=\"${1:model_name}_view_list\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.list</field>",
+      "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <list string=\"${3:List Title}\">",
       "            <field name=\"name\"/>",
@@ -56,10 +56,10 @@
     "description": "Create a new Odoo list view"
   },
   "Odoo Pivot View": {
-    "prefix": "odoo pivot",
+    "prefix": "odoo pivot view",
     "body": [
-      "<record id=\"view_${1:model_name}_pivot\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model.name}.pivot</field>",
+      "<record id=\"${1:model_name}_view_pivot\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.pivot</field>",
       "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <pivot string=\"${3:Pivot Title}\">",
@@ -73,10 +73,10 @@
     "description": "Create a new Odoo pivot view"
   },
   "Odoo Calendar View": {
-    "prefix": "odoo calendar",
+    "prefix": "odoo calendar view",
     "body": [
-      "<record id=\"view_${1:model_name}_calendar\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model.name}.calendar</field>",
+      "<record id=\"${1:model_name}_view_calendar\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.calendar</field>",
       "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <calendar string=\"${3:Calendar Title}\" date_start=\"${4:start_date_field}\" date_stop=\"${5:end_date_field}\" mode=\"month\">",
@@ -89,10 +89,10 @@
     "description": "Create a new Odoo calendar view"
   },
   "Odoo Graph View": {
-    "prefix": "odoo graph",
+    "prefix": "odoo graph view",
     "body": [
-      "<record id=\"view_${1:model_name}_graph\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model.name}.graph</field>",
+      "<record id=\"${1:model_name}_view_graph\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.graph</field>",
       "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <graph string=\"${3:Graph Title}\" type=\"bar\">",
@@ -105,10 +105,10 @@
     "description": "Create a new Odoo graph view"
   },
   "Odoo Search View": {
-    "prefix": "odoo search",
+    "prefix": "odoo search view",
     "body": [
-      "<record id=\"view_${1:model_name}_search\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model.name}.search</field>",
+      "<record id=\"${1:model_name}_view_search\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.search</field>",
       "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <search string=\"${3:Search Title}\">",
@@ -125,10 +125,10 @@
     "description": "Create a new Odoo search view"
   },
   "Odoo Kanban View": {
-    "prefix": "odoo kanban",
+    "prefix": "odoo kanban view",
     "body": [
-      "<record id=\"view_${1:model_name}_kanban\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${2:model.name}.kanban</field>",
+      "<record id=\"${1:model_name}_view_kanban\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${2:model.name}.view.kanban</field>",
       "    <field name=\"model\">${2:model.name}</field>",
       "    <field name=\"arch\" type=\"xml\">",
       "        <kanban string=\"${3:Kanban Title}\" class=\"o_kanban_small_column\">",
@@ -167,26 +167,15 @@
     ],
     "description": "Create an Odoo window action"
   },
-  "Odoo Menu Item": {
-    "prefix": "odoo menu",
-    "body": [
-      "<menuitem id=\"menu_${1:menu_name}\"",
-      "    name=\"${2:Menu Name}\"",
-      "    action=\"${3:action_name}\"",
-      "    parent=\"${4:parent_menu}\"",
-      "    sequence=\"${5:10}\"/>"
-    ],
-    "description": "Create a new Odoo menu item"
-  },
   "Odoo View Inherit": {
-    "prefix": "odoo inherit",
+    "prefix": "odoo view inherit",
     "body": [
-      "<record id=\"view_${1:model_name}_${2:view_type}_inherit\" model=\"ir.ui.view\">",
-      "    <field name=\"name\">${3:model.name}.${2:view_type}.inherit</field>",
-      "    <field name=\"model\">${4:model.name}</field>",
-      "    <field name=\"inherit_id\" ref=\"${5:module.view_id}\"/>",
+      "<record id=\"${1:model_name}_view_${2:view_type}_inherit\" model=\"ir.ui.view\">",
+      "    <field name=\"name\">${3:model.name}.inherit.${2:view_type}</field>",
+      "    <field name=\"model\">${3:model.name}</field>",
+      "    <field name=\"inherit_id\" ref=\"${4:module.view_id}\"/>",
       "    <field name=\"arch\" type=\"xml\">",
-      "        ${6:<!-- Add your xpath modifications here -->}",
+      "        ${5:<!-- Add your xpath modifications here -->}",
       "    </field>",
       "</record>"
     ],
