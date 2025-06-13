@@ -1,7 +1,7 @@
-# Odoo-Code-Assistance
+# Cybrosys-Assista-Odoo-Helper
 Odoo extension for Visual Studio Code
 
-Odoo Code Assistance provides a collection of intelligent code shortcuts designed to accelerate Odoo development. Below is the categorized reference of all available keywords (shortcuts) with descriptions and examples.
+Cybrosys Assista Odoo Helper provides a collection of intelligent code shortcuts designed to accelerate Odoo development. Below is the categorized reference of all available keywords (shortcuts) with descriptions and examples.
 
 ---
 

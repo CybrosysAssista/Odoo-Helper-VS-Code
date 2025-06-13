@@ -1,9 +1,34 @@
 {
-  "name": "odoo-code-assistance",
-  "displayName": "Odoo Code Assistance",
-  "description": "Advanced Odoo development assistant with model indexing, XML completion, and API decorator support",
-  "version": "1.1.1",
+  "name": "cybrosys-assista-odoo-helper",
+  "displayName": "Cybrosys Assista Odoo Helper",
+  "icon": "logo/logo.png",
+  "description": "VS Code extension focused on Odoo 18 development. Includes code completions, model/view scaffolding, XML/Python snippets, and decorator intelligence.",
+  "version": "1.2.0",
   "publisher": "cybrosys-assista-ltd",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CybrosysAssista/Assista-VS-Code.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CybrosysAssista/Assista-VS-Code/issues"
+  },
+  "homepage": "https://github.com/CybrosysAssista/Assista-VS-Code#readme",
+  "keywords": [
+    "odoo",
+    "odoo18",
+    "odoo18-dev",
+    "vscode",
+    "vscode-extension",
+    "xml",
+    "python",
+    "owl",
+    "snippets",
+    "scaffold",
+    "decorators",
+    "code-completion",
+    "odoo-snippets",
+    "odoo-module"
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -20,103 +45,103 @@
   "contributes": {
     "commands": [
       {
-        "command": "odoo-code-assistance.createOdooModelFile",
+        "command": "cybrosys-assista-odoo-helper.createOdooModelFile",
         "title": "Create Model File"
       },
       {
-        "command": "odoo-code-assistance.createOdooViewFile",
+        "command": "cybrosys-assista-odoo-helper.createOdooViewFile",
         "title": "Create View File"
       },
       {
-        "command": "odoo-code-assistance.createOdooAccessFile",
+        "command": "cybrosys-assista-odoo-helper.createOdooAccessFile",
         "title": "Create Security File"
       },
       {
-        "command": "odoo-code-assistance.createModuleBasic",
+        "command": "cybrosys-assista-odoo-helper.createModuleBasic",
         "title": "Create Basic Module"
       },
       {
-        "command": "odoo-code-assistance.createModuleAdvanced",
+        "command": "cybrosys-assista-odoo-helper.createModuleAdvanced",
         "title": "Create Advanced Module"
       },
       {
-        "command": "odoo-code-assistance.createModuleowlBasic",
+        "command": "cybrosys-assista-odoo-helper.createModuleowlBasic",
         "title": "Create Basic OWL Module"
       },
       {
-        "command": "odoo-code-assistance.createModuleowlAdvanced",
+        "command": "cybrosys-assista-odoo-helper.createModuleowlAdvanced",
         "title": "Create Advanced OWL Module"
       },
       {
-        "command": "odoo-code-assistance.createModuleWithSystrayMenu",
+        "command": "cybrosys-assista-odoo-helper.createModuleWithSystrayMenu",
         "title": "Create Module with Systray Menu"
       },
       {
-        "command": "odoo-code-assistance.createModuleWebsiteTheme",
+        "command": "cybrosys-assista-odoo-helper.createModuleWebsiteTheme",
         "title": "Create Website Theme"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "submenu": "odoo-code-assistance.createFileSubmenu",
+          "submenu": "cybrosys-assista-odoo-helper.createFileSubmenu",
           "group": "navigation@1",
           "title": "Create Odoo File"
         },
         {
-          "submenu": "odoo-code-assistance.createModuleSubmenu",
+          "submenu": "cybrosys-assista-odoo-helper.createModuleSubmenu",
           "group": "navigation@2",
           "title": "Create Odoo Module"
         }
       ],
-      "odoo-code-assistance.createFileSubmenu": [
+      "cybrosys-assista-odoo-helper.createFileSubmenu": [
         {
-          "command": "odoo-code-assistance.createOdooModelFile",
+          "command": "cybrosys-assista-odoo-helper.createOdooModelFile",
           "group": "odoo@1"
         },
         {
-          "command": "odoo-code-assistance.createOdooViewFile",
+          "command": "cybrosys-assista-odoo-helper.createOdooViewFile",
           "group": "odoo@2"
         },
         {
-          "command": "odoo-code-assistance.createOdooAccessFile",
+          "command": "cybrosys-assista-odoo-helper.createOdooAccessFile",
           "group": "odoo@3"
         }
       ],
-      "odoo-code-assistance.createModuleSubmenu": [
+      "cybrosys-assista-odoo-helper.createModuleSubmenu": [
         {
-          "command": "odoo-code-assistance.createModuleBasic",
+          "command": "cybrosys-assista-odoo-helper.createModuleBasic",
           "group": "odoo@1"
         },
         {
-          "command": "odoo-code-assistance.createModuleAdvanced",
+          "command": "cybrosys-assista-odoo-helper.createModuleAdvanced",
           "group": "odoo@2"
         },
         {
-          "command": "odoo-code-assistance.createModuleowlBasic",
+          "command": "cybrosys-assista-odoo-helper.createModuleowlBasic",
           "group": "odoo@3"
         },
         {
-          "command": "odoo-code-assistance.createModuleowlAdvanced",
+          "command": "cybrosys-assista-odoo-helper.createModuleowlAdvanced",
           "group": "odoo@4"
         },
         {
-          "command": "odoo-code-assistance.createModuleWithSystrayMenu",
+          "command": "cybrosys-assista-odoo-helper.createModuleWithSystrayMenu",
           "group": "odoo@5"
         },
         {
-          "command": "odoo-code-assistance.createModuleWebsiteTheme",
+          "command": "cybrosys-assista-odoo-helper.createModuleWebsiteTheme",
           "group": "odoo@6"
         }
       ]
     },
     "submenus": [
       {
-        "id": "odoo-code-assistance.createFileSubmenu",
+        "id": "cybrosys-assista-odoo-helper.createFileSubmenu",
         "label": "Create Odoo File"
       },
       {
-        "id": "odoo-code-assistance.createModuleSubmenu",
+        "id": "cybrosys-assista-odoo-helper.createModuleSubmenu",
         "label": "Create Odoo Module"
       }
     ],
@@ -131,19 +156,19 @@
       }
     ],
     "configuration": {
-      "title": "Odoo Code Assistance",
+      "title": "Cybrosys Assista Odoo Helper",
       "properties": {
-        "odoo-code-assistance.enableModelIndexing": {
+        "cybrosys-assista-odoo-helper.enableModelIndexing": {
           "type": "boolean",
           "default": true,
           "description": "Enable/disable model indexing"
         },
-        "odoo-code-assistance.enableXmlCompletion": {
+        "cybrosys-assista-odoo-helper.enableXmlCompletion": {
           "type": "boolean",
           "default": true,
           "description": "Enable/disable XML completion"
         },
-        "odoo-code-assistance.enableApiDecoratorCompletion": {
+        "cybrosys-assista-odoo-helper.enableApiDecoratorCompletion": {
           "type": "boolean",
           "default": true,
           "description": "Enable/disable API decorator completion"

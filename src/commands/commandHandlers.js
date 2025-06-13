@@ -312,39 +312,39 @@ async function handleCreateOdooAccessFile(uri) {
 function registerCommands(context) {
     const commands = [
         {
-            command: 'odoo-code-assistance.createModuleBasic',
+            command: 'cybrosys-assista-odoo-helper.createModuleBasic',
             handler: (uri) => handleCreateModule(uri, 'basic')
         },
         {
-            command: 'odoo-code-assistance.createModuleAdvanced',
+            command: 'cybrosys-assista-odoo-helper.createModuleAdvanced',
             handler: (uri) => handleCreateModule(uri, 'advanced')
         },
         {
-            command: 'odoo-code-assistance.createModuleowlBasic',
+            command: 'cybrosys-assista-odoo-helper.createModuleowlBasic',
             handler: (uri) => handleCreateModule(uri, 'owl_basic')
         },
         {
-            command: 'odoo-code-assistance.createModuleowlAdvanced',
+            command: 'cybrosys-assista-odoo-helper.createModuleowlAdvanced',
             handler: (uri) => handleCreateModule(uri, 'owl_advanced')
         },
         {
-            command: 'odoo-code-assistance.createModuleWithSystrayMenu',
+            command: 'cybrosys-assista-odoo-helper.createModuleWithSystrayMenu',
             handler: (uri) => handleCreateModule(uri, 'systray_module')
         },
         {
-            command: 'odoo-code-assistance.createModuleWebsiteTheme',
+            command: 'cybrosys-assista-odoo-helper.createModuleWebsiteTheme',
             handler: (uri) => handleCreateModule(uri, 'website_theme')
         },
         {
-            command: 'odoo-code-assistance.createOdooModelFile',
+            command: 'cybrosys-assista-odoo-helper.createOdooModelFile',
             handler: handleCreateOdooModelFile
         },
         {
-            command: 'odoo-code-assistance.createOdooViewFile',
+            command: 'cybrosys-assista-odoo-helper.createOdooViewFile',
             handler: handleCreateOdooViewFile
         },
         {
-            command: 'odoo-code-assistance.createOdooAccessFile',
+            command: 'cybrosys-assista-odoo-helper.createOdooAccessFile',
             handler: handleCreateOdooAccessFile
         }
     ];
