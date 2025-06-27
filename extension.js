@@ -73,6 +73,18 @@ function activate(context) {
         null,
         context.subscriptions
     );
+
+    // Listen for configuration changes to re-run linting
+    vscode.workspace.onDidChangeConfiguration(
+        e => {
+            if (e.affectsConfiguration('cybrosys-assista-odoo-helper.enableCodeStandardWarnings')) {
+                // Re-run linting on all open documents when the setting changes
+                vscode.workspace.textDocuments.forEach(doc => runOdooLint(doc, diagnosticCollection));
+            }
+        },
+        null,
+        context.subscriptions
+    );
 }
 
 function deactivate() {

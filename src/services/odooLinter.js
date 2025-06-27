@@ -590,6 +590,16 @@ function capitalize(str) {
 }
 
 function runOdooLint(document, collection) {
+    // Check if code standard warnings are enabled
+    const config = vscode.workspace.getConfiguration('cybrosys-assista-odoo-helper');
+    const enableCodeStandardWarnings = config.get('enableCodeStandardWarnings', true);
+    
+    // If warnings are disabled, clear any existing diagnostics and return early
+    if (!enableCodeStandardWarnings) {
+        collection.set(document.uri, []);
+        return;
+    }
+    
     const diagnostics = [];
     const filePath = document.uri.fsPath;
     const fileName = path.basename(filePath);
