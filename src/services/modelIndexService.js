@@ -74,6 +74,17 @@ class ModelIndexService {
         return Array.from(this.modelCache.keys());
     }
 
+    // New: Get all Odoo module names by scanning for __manifest__.py
+    async getAllModuleNames() {
+        const moduleNames = new Set();
+        const manifestFiles = await vscode.workspace.findFiles('**/__manifest__.py');
+        for (const file of manifestFiles) {
+            const moduleName = path.basename(path.dirname(file.fsPath));
+            moduleNames.add(moduleName);
+        }
+        return Array.from(moduleNames).sort();
+    }
+
     invalidateCache() {
         this.modelCache.clear();
         this.fieldCache.clear();

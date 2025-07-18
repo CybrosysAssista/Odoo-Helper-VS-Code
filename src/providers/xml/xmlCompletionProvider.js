@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const templateIndexService = require('../../services/templateIndexService');
 
 class OdooXmlCompletionProvider {
     constructor() {
@@ -22,7 +23,8 @@ class OdooXmlCompletionProvider {
             'report',
             'template',
             'view',
-            'wizard'
+            'wizard',
+            't' // Add t for QWeb
         ];
 
         this.fieldTypes = [
@@ -60,21 +62,55 @@ class OdooXmlCompletionProvider {
             'graph': ['string', 'type', 'stacked'],
             'pivot': ['string', 'display_quantity', 'group_by'],
             'action': ['id', 'name', 'res_model', 'view_mode', 'view_id', 'view_type', 'target', 'context', 'domain', 'limit', 'help', 'binding_model_id', 'binding_type', 'binding_view_types'],
-            'report': ['id', 'name', 'model', 'report_type', 'report_name', 'report_file', 'print_report_name', 'attachment', 'attachment_use', 'paperformat_id', 'header', 'groups', 'multi', 'bind_report_type']
+            'report': ['id', 'name', 'model', 'report_type', 'report_name', 'report_file', 'print_report_name', 'attachment', 'attachment_use', 'paperformat_id', 'header', 'groups', 'multi', 'bind_report_type'],
+            't': ['t-call', 't-foreach', 't-as', 't-set', 't-value', 't-name', 't-lang']
         };
     }
 
     provideCompletionItems(document, position) {
-        const textUntilPosition = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
-        const currentLine = document.lineAt(position).text;
-        
+        const text = document.getText();
+        const offset = document.offsetAt(position);
+
+        // Xpath position attribute value suggestions
+        const before = text.slice(0, offset);
+        // Check if we're editing position attribute in an xpath tag
+        const xpathPositionMatch = before.match(/<xpath[^>]*\bposition\s*=\s*['"]([^'"]*)$/);
+        if (xpathPositionMatch) {
+            const partial = xpathPositionMatch[1] || '';
+            const positions = ['after', 'before', 'inside', 'replace', 'attributes'];
+            return positions
+                .filter(pos => pos.startsWith(partial))
+                .map(pos => {
+                    const item = new vscode.CompletionItem(pos, vscode.CompletionItemKind.EnumMember);
+                    item.insertText = pos;
+                    item.detail = 'Odoo Xpath Position';
+                    return item;
+                });
+        }
+
+        // Find if we're inside t-call="..."
+        const tcallMatch = before.match(/<t[^>]*\bt-call\s*=\s*['"]([^'"]*)$/);
+        if (tcallMatch) {
+            const partial = tcallMatch[1] || '';
+            return templateIndexService.getAllTemplates()
+                .filter(tpl => tpl.startsWith(partial))
+                .map(tpl => {
+                    const item = new vscode.CompletionItem(tpl, vscode.CompletionItemKind.Reference);
+                    item.insertText = tpl;
+                    item.detail = 'Odoo QWeb Template';
+                    return item;
+                });
+        }
+
         // Check if we're inside a tag
+        const currentLine = document.lineAt(position).text;
         const tagMatch = /<([^>]*)$/.exec(currentLine);
         if (tagMatch) {
             return this.provideTagCompletions(tagMatch[1]);
         }
 
         // Check if we're inside an attribute
+        const textUntilPosition = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
         const attributeMatch = /<[^>]*\s+([^=]*)$/.exec(currentLine);
         if (attributeMatch) {
             const tagName = this.getCurrentTag(textUntilPosition);
