@@ -22,13 +22,27 @@ function getAllModelData(workspaceFolders) {
         'Many2one', 'One2many', 'Many2many', 'Json'
     ]);
 
+    // Directories to ignore during walk
+    const IGNORED_DIRS = new Set(['venv', '.venv', 'env', '.env', '__pycache__', 'node_modules']);
+
     const walk = (dir) => {
         const files = fs.readdirSync(dir);
         for (const file of files) {
             const fullPath = path.join(dir, file);
-            const stat = fs.statSync(fullPath);
+            let stat;
+            try {
+                stat = fs.statSync(fullPath);
+            } catch (err) {
+                // Skip files/dirs that can't be stat'ed (e.g., broken symlinks)
+                continue;
+            }
 
             if (stat.isDirectory()) {
+                // Skip known venv/caches and any directory containing pyvenv.cfg (Python venv)
+                if (
+                    IGNORED_DIRS.has(file) ||
+                    fs.existsSync(path.join(fullPath, 'pyvenv.cfg'))
+                ) continue;
                 walk(fullPath);
             } else if (stat.isFile() && file.endsWith('.py')) {
                 try {
@@ -252,32 +266,55 @@ function registerModelProviders(context) {
         {
             provideCompletionItems(document, position) {
                 const lineText = document.lineAt(position.line).text;
+                const textBefore = lineText.substring(0, position.character);
+                const fullText = document.getText();
 
                 let comodelName = null;
+                let partial = '';
 
-                // Case 1: Keyword argument - comodel_name="..."
-                let keywordMatch = lineText.match(/comodel_name\s*=\s*['"]([^'"]+)['"]/);
-                if (keywordMatch) {
-                    comodelName = keywordMatch[1];
+                // Case 1: Keyword argument - comodel_name="...", inverse_name="partial"
+                let kwMatch = textBefore.match(/comodel_name\s*=\s*['"]([^'\"]+)['"][^\n]*inverse_name\s*=\s*['"]([^'\"]*)$/);
+                if (kwMatch) {
+                    comodelName = kwMatch[1];
+                    partial = kwMatch[2] || '';
                 } else {
-                    // Case 2: Positional argument - first string in fields.One2many(...)
-                    let positionalMatch = lineText.match(/fields\.One2many\s*\(\s*['"]([^'"]+)['"]/);
-                    if (positionalMatch) {
-                        comodelName = positionalMatch[1];
+                    // Case 2: Positional argument - fields.One2many('comodel', 'partial_inverse_name')
+                    let posMatch = textBefore.match(/fields\.One2many\s*\(\s*['"]([^'\"]+)['"]\s*,\s*['"]([^'\"]*)$/);
+                    if (posMatch) {
+                        comodelName = posMatch[1];
+                        partial = posMatch[2] || '';
                     }
                 }
 
                 if (!comodelName) return;
 
+                // Find the current model name (_name or _inherit)
+                let modelName = null;
+                let nameMatch = fullText.match(/_name\s*=\s*['"]([^'"]+)['"]/);
+                let inheritMatch = fullText.match(/_inherit\s*=\s*['"]([^'"]+)['"]/);
+                if (nameMatch) {
+                    modelName = nameMatch[1];
+                } else if (inheritMatch) {
+                    modelName = inheritMatch[1];
+                }
+                if (!modelName) return;
+
                 const fieldsMap = modelDataCache[comodelName];
                 if (!fieldsMap) return;
 
-                return Object.entries(fieldsMap).map(([fieldName, meta]) => {
-                    const item = new vscode.CompletionItem(fieldName, vscode.CompletionItemKind.Field);
-                    item.insertText = fieldName;
-                    item.detail = `Type: ${meta.type}` + (meta.related ? ` → ${meta.related}` : '');
-                    return item;
-                });
+                // Only suggest Many2one fields whose related matches the current model
+                return Object.entries(fieldsMap)
+                    .filter(([fieldName, meta]) =>
+                        meta.type === 'Many2one' &&
+                        meta.related === modelName &&
+                        fieldName.startsWith(partial)
+                    )
+                    .map(([fieldName, meta]) => {
+                        const item = new vscode.CompletionItem(fieldName, vscode.CompletionItemKind.Field);
+                        item.insertText = fieldName;
+                        item.detail = `Type: ${meta.type}` + (meta.related ? ` → ${meta.related}` : '');
+                        return item;
+                    });
             }
         },
         "'", '"' // Trigger completion inside quotes
@@ -395,11 +432,116 @@ function registerModelProviders(context) {
         '.' // Trigger on dot
     );
     
+//    // Simple and robust One2many inverse_name auto-suggestion
+//    const One2manyInverseProvider = vscode.languages.registerCompletionItemProvider(
+//        'python',
+//        {
+//            provideCompletionItems(document, position) {
+//                // Get up to 5 lines above and below the current line for context
+//                const startLine = Math.max(0, position.line - 4);
+//                const endLine = Math.min(document.lineCount - 1, position.line + 4);
+//                let contextText = '';
+//                for (let i = startLine; i <= endLine; i++) {
+//                    contextText += document.lineAt(i).text + '\n';
+//                }
+//
+//                // Try to match positional: fields.One2many('comodel', 'inverse_name'
+//                let posMatch = contextText.match(/fields\.One2many\s*\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]*)$/);
+//                let comodelName, partial;
+//                if (posMatch) {
+//                    comodelName = posMatch[1];
+//                    partial = posMatch[2] || '';
+//                } else {
+//                    // Try to match keyword: comodel_name='...', inverse_name='...'
+//                    let kwMatch = contextText.match(/comodel_name\s*=\s*['"]([^'"]+)['"][^)]*inverse_name\s*=\s*['"]([^'"]*)$/);
+//                    if (kwMatch) {
+//                        comodelName = kwMatch[1];
+//                        partial = kwMatch[2] || '';
+//                    }
+//                }
+//                if (!comodelName) return;
+//
+//                // Find the current model name (_name or _inherit)
+//                const fullText = document.getText();
+//                let modelName = null;
+//                let nameMatch = fullText.match(/_name\s*=\s*['"]([^'"]+)['"];/);
+//                let inheritMatch = fullText.match(/_inherit\s*=\s*['"]([^'"]+)['"];/);
+//                if (nameMatch) {
+//                    modelName = nameMatch[1];
+//                } else if (inheritMatch) {
+//                    modelName = inheritMatch[1];
+//                }
+//                if (!modelName) return;
+//
+//                // Use the modelDataCache from the closure
+//                const fieldsMap = modelDataCache[comodelName];
+//                if (!fieldsMap) return;
+//
+//                // Only suggest Many2one fields whose related matches the current model
+//                return Object.entries(fieldsMap)
+//                    .filter(([fieldName, meta]) =>
+//                        meta.type === 'Many2one' &&
+//                        meta.related === modelName &&
+//                        fieldName.startsWith(partial)
+//                    )
+//                    .map(([fieldName, meta]) => {
+//                        const item = new vscode.CompletionItem(fieldName, vscode.CompletionItemKind.Field);
+//                        item.insertText = fieldName;
+//                        item.detail = `Type: ${meta.type}` + (meta.related ? ` → ${meta.related}` : '');
+//                        return item;
+//                    });
+//            }
+//        },
+//        "'", '"' // Trigger completion inside quotes
+//    );
+//
+    // Field name auto-suggestion for @api.onchange and @api.depends
+    const ApiDecoratorFieldProvider = vscode.languages.registerCompletionItemProvider(
+        'python',
+        {
+            provideCompletionItems(document, position) {
+                const line = document.lineAt(position.line).text;
+                const textBefore = line.substring(0, position.character);
+                const fullText = document.getText();
+
+                // Check if inside @api.onchange or @api.depends decorator
+                const decoratorLine = line.trim();
+                if (!decoratorLine.startsWith('@api.onchange') && !decoratorLine.startsWith('@api.depends')) return;
+
+                // Find the current model name (_name or _inherit)
+                let modelName = null;
+                let nameMatch = fullText.match(/_name\s*=\s*['"]([^'"]+)['"]/);
+                let inheritMatch = fullText.match(/_inherit\s*=\s*['"]([^'"]+)['"]/);
+                if (nameMatch) {
+                    modelName = nameMatch[1];
+                } else if (inheritMatch) {
+                    modelName = inheritMatch[1];
+                }
+                if (!modelName) return;
+
+                // Use the modelDataCache from the closure
+                const fieldsMap = modelDataCache[modelName];
+                if (!fieldsMap) return;
+
+                // Suggest all field names
+                return Object.entries(fieldsMap).map(([fieldName, meta]) => {
+                    const item = new vscode.CompletionItem(fieldName, vscode.CompletionItemKind.Field);
+                    item.insertText = fieldName;
+                    item.detail = `Type: ${meta.type}` + (meta.related ? ` → ${meta.related}` : '');
+                    return item;
+                });
+            }
+        },
+        "'", '"' // Trigger completion inside quotes
+    );
+
     context.subscriptions.push(RelatedFieldProvider);
     context.subscriptions.push(ModelProvider);
     context.subscriptions.push(XmlModelProvider);
     context.subscriptions.push(XmlFieldProvider);
     context.subscriptions.push(InverseNameProvider);
+//    context.subscriptions.push(One2manyInverseProvider);
+    context.subscriptions.push(ApiDecoratorFieldProvider);
 
     // Watch for changes
     const watcher = vscode.workspace.createFileSystemWatcher('**/*.py');
