@@ -389,11 +389,7 @@ Templates for creating and inheriting Odoo views.
   Adds chatter functionality to a form view.  
   _Example:_
   ```xml
-  <div class="oe_chatter">
-      <field name="message_follower_ids"/>
-      <field name="activity_ids"/>
-      <field name="message_ids"/>
-  </div>
+  <chatter/>
   ```
 
 ---

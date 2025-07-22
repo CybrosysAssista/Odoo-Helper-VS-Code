@@ -4,6 +4,9 @@ All notable changes to the **cybrosys-assista-odoo-helper** extension will be do
 
 Check out [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) for guidelines.
 
+## [1.4.1] - 2025-07-22
+### Changed
+- Completions fix.
 
 ## [1.4.0] - 2025-07-22
 ### Added

@@ -4,14 +4,18 @@ const { registerFieldProviders } = require('./src/providers/odooCompletionProvid
 const { registerCommands } = require('./src/commands/commandHandlers');
 const { runOdooLint } = require('./src/services/odooLinter');
 const modelIndexService = require('./src/services/modelIndexService');
+const templateIndexService = require('./src/services/templateIndexService');
 const OdooXmlCompletionProvider = require('./src/providers/xml/xmlCompletionProvider');
 const RelationalFieldCompletionProvider = require('./src/providers/completion/relationalFieldProvider');
 const ImportCompletionProvider = require('./src/providers/completion/importCompletionProvider');
+const ManifestDependsCompletionProvider = require('./src/providers/completion/manifestDependsCompletionProvider');
+const OdooDefinitionProvider = require('./src/providers/odooDefinitionProvider');
 
 function activate(context) {
-    // Initialize model index service
+    // Initialize index services
     modelIndexService.initialize();
     modelIndexService.buildCache();
+    templateIndexService.initialize();
 
     // Register model providers
     registerModelProviders(context);
@@ -24,7 +28,8 @@ function activate(context) {
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
             { scheme: 'file', language: 'xml' },
-            xmlProvider
+            xmlProvider,
+            '"', "'", '=', ' ', '>'
         )
     );
 
@@ -37,8 +42,7 @@ function activate(context) {
         )
     );
 
-
-    // Register import completion provider
+    // ✅ Register import completion provider (was missing in second version)
     const importProvider = new ImportCompletionProvider();
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
@@ -47,10 +51,38 @@ function activate(context) {
         )
     );
 
+    // Register manifest depends completion provider
+    const manifestDependsProvider = new ManifestDependsCompletionProvider();
+    context.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider(
+            [
+                { scheme: 'file', language: '*', pattern: '**/__manifest__.py' },
+                { scheme: 'file', language: '*', pattern: '**/__manifest__.json' }
+            ],
+            manifestDependsProvider,
+            "'", '"', ',', '[', ' '
+        )
+    );
+
+    // Register Odoo definition provider
+    const odooDefProvider = new OdooDefinitionProvider();
+    context.subscriptions.push(
+        vscode.languages.registerDefinitionProvider(
+            { scheme: 'file', language: 'xml' },
+            odooDefProvider
+        )
+    );
+    context.subscriptions.push(
+        vscode.languages.registerDefinitionProvider(
+            { scheme: 'file', language: 'python' },
+            odooDefProvider
+        )
+    );
+
     // Register commands
     registerCommands(context);
 
-    // 🆕 Odoo Linting Setup
+    // Odoo Linting Setup
     const diagnosticCollection = vscode.languages.createDiagnosticCollection("odooLint");
     context.subscriptions.push(diagnosticCollection);
 
@@ -74,11 +106,10 @@ function activate(context) {
         context.subscriptions
     );
 
-    // Listen for configuration changes to re-run linting
+    // Re-run linting when relevant config changes
     vscode.workspace.onDidChangeConfiguration(
         e => {
             if (e.affectsConfiguration('cybrosys-assista-odoo-helper.enableCodeStandardWarnings')) {
-                // Re-run linting on all open documents when the setting changes
                 vscode.workspace.textDocuments.forEach(doc => runOdooLint(doc, diagnosticCollection));
             }
         },
