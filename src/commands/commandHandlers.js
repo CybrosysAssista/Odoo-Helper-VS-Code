@@ -2,14 +2,7 @@ const vscode = require('vscode');
 const { createOdooScaffold } = require('../modules/scaffold');
 const fs = require('fs');
 const path = require('path');
-const { getBasicViewTemplate } = require('./templates/basicView');
-const { getAdvancedViewTemplate } = require('./templates/advancedView');
-const { getInheritViewTemplate } = require('./templates/inheritView');
-const { getReportViewTemplate } = require('./templates/reportView');
-const { getSecurityGroupViewTemplate, getSecurityRuleViewTemplate } = require('./templates/securityView');
-const { getSequenceViewTemplate } = require('./templates/sequenceView');
-const { getSettingsViewTemplate } = require('./templates/settingsView');
-const { getCronViewTemplate } = require('./templates/cronView');
+const templates = require('./templates');
 
 function capitalize(text) {
     return text
@@ -133,9 +126,9 @@ from odoo import http
 from odoo.http import request
 
 
-class ContollerController(http.Controller):
+class MainController(http.Controller):
     """Controller class to handle HTTP routes."""
-    @http.route('/contoller', auth='public', website=True)
+    @http.route('/controller', auth='public', website=True)
     def index(self, **kw):
         return request.render('your_module.template_id', {'sample_data': 'Sample Data'})`;
             }
@@ -212,42 +205,42 @@ async function handleCreateOdooViewFile(uri) {
                 break;
 
             case 'Basic View':
-                fileContent = getBasicViewTemplate(pureName, modelDotName, modelTitle);
+                fileContent = await templates.getBasicViewTemplate(pureName, modelDotName, modelTitle);
                 break;
 
             case 'Advanced View':
                 console.log("pureName",pureName);
                 console.log("modelDotName",modelDotName);
                 console.log("modelTitle",modelTitle);
-                fileContent = getAdvancedViewTemplate(pureName, modelDotName, modelTitle);
+                fileContent = await templates.getAdvancedViewTemplate(pureName, modelDotName, modelTitle);
                 break;
 
             case 'Inherit View':
-                fileContent = getInheritViewTemplate(pureName, modelDotName);
+                fileContent = await templates.getInheritViewTemplate(pureName, modelDotName);
                 break;
 
             case 'Report View':
-                fileContent = getReportViewTemplate(pureName, modelDotName, modelTitle);
+                fileContent = await templates.getReportViewTemplate(pureName, modelDotName, modelTitle);
                 break;
 
             case 'Security Group View':
-                fileContent = getSecurityGroupViewTemplate(pureName, modelTitle);
+                fileContent = await templates.getSecurityGroupViewTemplate(pureName, modelTitle);
                 break;
 
             case 'Security Rule View':
-                fileContent = getSecurityRuleViewTemplate(pureName, modelDotName);
+                fileContent = await templates.getSecurityRuleViewTemplate(pureName, modelDotName);
                 break;
 
             case 'Sequence View':
-                fileContent = getSequenceViewTemplate(pureName, modelDotName, modelTitle);
+                fileContent = await templates.getSequenceViewTemplate(pureName, modelDotName, modelTitle);
                 break;
 
             case 'Settings View':
-                fileContent = getSettingsViewTemplate(pureName, modelDotName, modelTitle);
+                fileContent = await templates.getSettingsViewTemplate(pureName, modelDotName, modelTitle);
                 break;
 
             case 'Cron Job View':
-                fileContent = getCronViewTemplate(pureName, modelDotName, modelTitle);
+                fileContent = await templates.getCronViewTemplate(pureName, modelDotName, modelTitle);
                 break;
         }
 

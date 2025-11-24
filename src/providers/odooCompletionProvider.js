@@ -1,17 +1,17 @@
 const vscode = require('vscode');
-const odooFieldTypes = require('./data/odooFieldTypes');
-const odooDecorators = require('./data/odooDecorators');
-const odooFieldAttributes = require('./data/odooFieldAttributes');
-const fieldSnippets = require('./data/odooFieldSnippets');
-const utilitySnippets = require('./data/odooUtilitySnippets');
-const methodSuggestions = require('./data/odooMethodSnippets');
-const modelSnippets = require('./data/odooModelSnippets');
+const { getFieldTypes } = require('./data/fieldTypes');
+const { getDecorators } = require('./data/decorators');
+const { getFieldAttributes } = require('./data/fieldAttributes');
+const { getFieldSnippets } = require('./data/fieldSnippets');
+const { getUtilitySnippets } = require('./data/utilitySnippets');
+const { getMethodSuggestions } = require('./data/methodSnippets');
+const { getModelSnippets } = require('./data/modelSnippets');
 
 function registerFieldProviders(context) {
     const fieldTypeProvider = vscode.languages.registerCompletionItemProvider(
         'python',
         {
-            provideCompletionItems(document, position) {
+            async provideCompletionItems(document, position) {
             const line = document.lineAt(position).text;
             const textBefore = line.substring(0, position.character);
 
@@ -21,7 +21,8 @@ function registerFieldProviders(context) {
 
             const typed = match[1];
 
-            return odooFieldTypes
+            const types = await getFieldTypes();
+            return types
                 .filter(type => type.toLowerCase().startsWith(typed.toLowerCase()))
                 .map(type => {
                 const item = new vscode.CompletionItem(type, vscode.CompletionItemKind.Property);
@@ -39,11 +40,12 @@ function registerFieldProviders(context) {
     const methodDecoratorProvider = vscode.languages.registerCompletionItemProvider(
         'python',
         {
-            provideCompletionItems(document, position) {
+            async provideCompletionItems(document, position) {
                 const line = document.lineAt(position);
                 const textBefore = line.text.substring(0, position.character);
                 if (!textBefore.trim().endsWith("@")) return undefined;
-                return odooDecorators.map(type => {
+                const decorators = await getDecorators();
+                return decorators.map(type => {
                     const item = new vscode.CompletionItem(type, vscode.CompletionItemKind.Keyword);
                     item.insertText = type;
                     item.detail = 'Odoo Method Decorators';
@@ -59,12 +61,13 @@ function registerFieldProviders(context) {
     const fieldAttributesProvider = vscode.languages.registerCompletionItemProvider(
         'python',
         {
-            provideCompletionItems(document, position) {
+            async provideCompletionItems(document, position) {
                 const line = document.lineAt(position);
                 const textBefore = line.text.substring(0, position.character);
                 if (!textBefore.includes('fields.')) return undefined;
                 
-                return odooFieldAttributes.map(attr => {
+                const attrs = await getFieldAttributes();
+                return attrs.map(attr => {
                     const item = new vscode.CompletionItem(attr, vscode.CompletionItemKind.Property);
                     item.insertText = `${attr}=`;
                     item.detail = 'Odoo Field Attribute';
@@ -134,14 +137,14 @@ function registerFieldProviders(context) {
 const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
     'python',
     {
-        provideCompletionItems(document, position) {
+        async provideCompletionItems(document, position) {
             const line = document.lineAt(position);
             line.text.substring(0, position.character);
 
             const suggestions = [];
 
             // Add model snippets
-            modelSnippets.forEach(snippet => {
+            (await getModelSnippets()).forEach(snippet => {
                 const item = new vscode.CompletionItem(snippet.label, vscode.CompletionItemKind.Class);
                 item.sortText = snippet.sortText;
                 item.insertText = new vscode.SnippetString(snippet.insertText);
@@ -151,7 +154,7 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
             });
 
             // Add all decorators with enhanced documentation
-            odooDecorators.forEach(decorator => {
+            (await getDecorators()).forEach(decorator => {
                 const item = new vscode.CompletionItem(`@${decorator}`, vscode.CompletionItemKind.Snippet);
                 item.sortText = `odoo_decorator_${String(decorator).toLowerCase()}`;
                 
@@ -181,7 +184,7 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
             });
 
             // Add all field snippets with enhanced documentation
-            fieldSnippets.forEach(snippet => {
+            (await getFieldSnippets()).forEach(snippet => {
                 const item = new vscode.CompletionItem(snippet.label, vscode.CompletionItemKind.Field);
                 item.sortText = `odoo field ${String(snippet.label).toLowerCase()}`;
                 item.insertText = snippet.insertText;
@@ -193,7 +196,7 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
                 suggestions.push(item);
             });
 
-            utilitySnippets.forEach(snippet => {
+            (await getUtilitySnippets()).forEach(snippet => {
                 const item = new vscode.CompletionItem(snippet.label, vscode.CompletionItemKind.Field);
                 item.sortText = `odoo ${String(snippet.label).toLowerCase()}`;
                 item.insertText = snippet.insertText;
@@ -206,7 +209,7 @@ const odooKeywordProvider = vscode.languages.registerCompletionItemProvider(
             });
 
             // Add method suggestions
-            methodSuggestions.forEach(method => {
+            (await getMethodSuggestions()).forEach(method => {
                 const item = new vscode.CompletionItem(method.label, vscode.CompletionItemKind.Method);
                 item.sortText = `odoo method ${String(method.label).toLowerCase()}`;
                 item.insertText = new vscode.SnippetString(method.insertText);
